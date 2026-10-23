@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Backend API Configuration
   // 1. Check if user configured a remote cloud backend URL (e.g. for GitHub Pages deployment)
-  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url');
+  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url') || window.TRADEFOX_API_BASE;
   const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   
   const API_BASE_URL = savedRemoteBackend 

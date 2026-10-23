@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --------------------------------------------------------------------------
   // 3. API Helpers & Backend Handshakes
   // --------------------------------------------------------------------------
-  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url');
+  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url') || window.TRADEFOX_API_BASE;
   const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const API_BASE = savedRemoteBackend 
     ? savedRemoteBackend.replace(/\/+$/, '') 
@@ -299,22 +299,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch real watchlist from PostgreSQL
   async function fetchBackendWatchlist() {
+    let loaded = false;
     try {
       const res = await fetch(`${API_BASE}/watchlist?userId=${userId}`, {
         headers: authHeaders({ 'Accept': 'application/json' })
       });
       if (res.ok) {
-        watchlist = await res.json();
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Backend returned an invalid watchlist response');
+        watchlist = data;
+        loaded = true;
       } else {
         if (res.status === 401) handleUnauthorized();
-        watchlist = [];
+        console.warn('Failed to load watchlist:', res.status, await getApiErrorMessage(res));
       }
     } catch (e) {
       console.warn('Failed to load watchlist:', e);
-      watchlist = [];
     }
     renderWatchlistTable();
     updateWatchlistButtonState();
+    return loaded;
+  }
+
+  async function getApiErrorMessage(response) {
+    const contentType = response.headers.get('content-type') || '';
+    try {
+      if (contentType.includes('application/json') || contentType.includes('application/problem+json')) {
+        const body = await response.clone().json();
+        return body.detail || body.message || body.error || `Request failed (${response.status})`;
+      }
+      const text = await response.clone().text();
+      if (text.toLowerCase().includes('<html')) {
+        return 'The frontend host returned a page instead of the API. Configure tradefox_backend_url with your public Spring Boot API URL ending in /api.';
+      }
+      return text || `Request failed (${response.status})`;
+    } catch {
+      return `Request failed (${response.status})`;
+    }
   }
 
   function renderUserHeader() {
@@ -850,6 +871,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? `${Number(live.day_change_percentage) >= 0 ? '+' : ''}${Number(live.day_change_percentage).toFixed(2)}%`
                 : item.change;
               const isUp = !chg.startsWith('-');
+              const isWl = watchlist.some(w => String(w.stockSymbol || '').trim().toUpperCase() === item.symbol.toUpperCase());
               return `
                 <tr class="clickable-stock-row" data-symbol="${item.symbol}">
                   <td>
@@ -862,9 +884,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <td><strong class="explore-price-val">${formatCurrency(price)}</strong></td>
                   <td><span class="mover-change explore-change-val ${isUp ? 'up' : 'down'}">${chg}</span></td>
                   <td class="text-right" onclick="event.stopPropagation();">
-                    <button type="button" class="btn-action-buy btn-explore-trade" data-sym="${item.symbol}" data-price="${price}">
-                      View &amp; Trade
-                    </button>
+                    <div style="display: inline-flex; align-items: center; gap: 0.45rem;">
+                      <button type="button" class="search-btn-star btn-table-star ${isWl ? 'active' : ''}" data-sym="${item.symbol}" data-name="${item.name}" title="${isWl ? 'Remove from Watchlist' : 'Add to Watchlist'}">
+                        ${isWl ? '★' : '☆'}
+                      </button>
+                      <button type="button" class="btn-action-buy btn-explore-trade" data-sym="${item.symbol}" data-price="${price}">
+                        View &amp; Trade
+                      </button>
+                    </div>
                   </td>
                 </tr>
               `;
@@ -875,6 +902,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
 
     container.innerHTML = categoriesHtml + directoryTableHtml;
+
+    // Attach star quick-toggle handlers in Explore table
+    container.querySelectorAll('.btn-table-star').forEach(star => {
+      star.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const sym = star.getAttribute('data-sym');
+        const name = star.getAttribute('data-name');
+        await toggleWatchlistBackend(sym, name);
+      });
+    });
 
     // Attach card click handlers (Opens Stock Terminal)
     container.querySelectorAll('.feed-stock-card').forEach(card => {
@@ -1241,29 +1278,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dataObj = marketQuotes && marketQuotes.data ? marketQuotes.data : {};
 
     tbody.innerHTML = watchlist.map((item) => {
-      const live = dataObj[item.stockSymbol];
-      const benchmark = BENCHMARK_STOCKS.find(b => b.symbol === item.stockSymbol);
+      const symUpper = String(item.stockSymbol || '').trim().toUpperCase();
+      const live = dataObj[symUpper];
+      const benchmark = BENCHMARK_STOCKS.find(b => b.symbol.toUpperCase() === symUpper);
       const price = (live && (live.live_price || live.price)) 
         ? Number(live.live_price || live.price) 
-        : (benchmark ? benchmark.price : (lastKnownStockPrices['WL_' + item.stockSymbol] || null));
+        : (item.price != null 
+            ? Number(item.price) 
+            : (benchmark ? benchmark.price : (lastKnownStockPrices['WL_' + symUpper] || null)));
       const chgPct = (live && live.day_change_percentage !== undefined) 
         ? Number(live.day_change_percentage) 
-        : (benchmark ? benchmark.changePct : null);
+        : (item.dayChangePercentage != null 
+            ? Number(item.dayChangePercentage) 
+            : (benchmark ? benchmark.changePct : null));
       const isUp = chgPct !== null ? chgPct >= 0 : true;
-      const displayName = benchmark ? benchmark.name : (item.stockName || item.stockSymbol);
+      const displayName = benchmark ? benchmark.name : (item.stockName || symUpper);
 
-      if (price) lastKnownStockPrices['WL_' + item.stockSymbol] = price;
+      if (price) lastKnownStockPrices['WL_' + symUpper] = price;
 
       return `
-        <tr class="clickable-wl-row" data-symbol="${item.stockSymbol}">
+        <tr class="clickable-wl-row" data-symbol="${symUpper}">
           <td>
             <div class="stock-cell-wrap">
-              <strong class="stock-cell-sym">${item.stockSymbol}</strong>
+              <strong class="stock-cell-sym">${symUpper}</strong>
               <span style="font-size: 0.76rem; color: var(--text-muted);">${displayName}</span>
             </div>
           </td>
           <td><span class="stock-exchange-badge">NSE</span></td>
-          <td><strong class="wl-live-price" data-sym="${item.stockSymbol}">${price ? formatCurrency(price) : 'Fetching...'}</strong></td>
+          <td><strong class="wl-live-price" data-sym="${symUpper}">${price ? formatCurrency(price) : 'Fetching...'}</strong></td>
           <td>
             <span class="mover-change wl-change-val ${isUp ? 'up' : 'down'}">
               ${chgPct !== null ? `${isUp ? '+' : ''}${chgPct.toFixed(2)}%` : '—'}
@@ -1271,8 +1313,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           </td>
           <td class="text-right" onclick="event.stopPropagation();">
             <div class="cell-actions">
-              <button type="button" class="btn-action-buy btn-wl-trade" data-sym="${item.stockSymbol}" data-price="${price || 100}">Trade</button>
-              <button type="button" class="btn-action-sell btn-wl-remove" data-sym="${item.stockSymbol}" title="Remove from Watchlist">✕</button>
+              <button type="button" class="btn-action-buy btn-wl-trade" data-sym="${symUpper}" data-price="${price || 100}">Trade</button>
+              <button type="button" class="btn-action-sell btn-wl-remove" data-sym="${symUpper}" title="Remove from Watchlist">✕</button>
             </div>
           </td>
         </tr>
@@ -1347,39 +1389,69 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 7. Watchlist Backend Handshake (Add / Remove)
   // --------------------------------------------------------------------------
   async function toggleWatchlistBackend(symbol, name, forceAdd = null) {
-    const isCurrentlyIn = watchlist.some(w => w.stockSymbol === symbol);
+    const cleanSymbol = String(symbol || '').trim().toUpperCase();
+    if (!cleanSymbol || cleanSymbol.length > 30) {
+      showToast('Enter a valid stock symbol before updating your watchlist', 'error');
+      return;
+    }
+
+    const previousWatchlist = [...watchlist];
+    const isCurrentlyIn = watchlist.some(w => String(w.stockSymbol || '').trim().toUpperCase() === cleanSymbol);
     const shouldAdd = forceAdd !== null ? forceAdd : !isCurrentlyIn;
+    const benchmark = BENCHMARK_STOCKS.find(b => b.symbol.toUpperCase() === cleanSymbol);
+    const resolvedName = name || (benchmark ? benchmark.name : cleanSymbol);
+
+    // 1. Optimistic UI update (Immediate visual feedback!)
+    if (shouldAdd) {
+      if (!isCurrentlyIn) {
+        watchlist.unshift({
+          stockSymbol: cleanSymbol,
+          stockName: resolvedName,
+          price: (benchmark ? benchmark.price : null)
+        });
+      }
+    } else {
+      watchlist = watchlist.filter(w => String(w.stockSymbol || '').trim().toUpperCase() !== cleanSymbol);
+    }
+    renderWatchlistTable();
+    updateWatchlistButtonState();
+    updateAllStarButtons(cleanSymbol, shouldAdd);
 
     try {
       if (shouldAdd) {
-        const benchmark = BENCHMARK_STOCKS.find(b => b.symbol === symbol);
-        const resolvedName = name || (benchmark ? benchmark.name : symbol);
         const res = await fetch(`${API_BASE}/watchlist`, {
           method: 'POST',
           headers: authHeaders({ 'Content-Type': 'application/json' }),
-          body: JSON.stringify({ userId, stockSymbol: symbol, stockName: resolvedName })
+          body: JSON.stringify({ userId, stockSymbol: cleanSymbol, stockName: resolvedName })
         });
-        if (res.ok) {
-          showToast(`Added ${symbol} to your watchlist`, 'success');
-        } else if (res.status === 401) {
-          handleUnauthorized();
+        if (!res.ok) {
+          if (res.status === 401) handleUnauthorized();
+          throw new Error(await getApiErrorMessage(res));
         }
+        showToast(`Added ${cleanSymbol} to your watchlist`, 'success');
       } else {
-        const res = await fetch(`${API_BASE}/watchlist?userId=${userId}&symbol=${symbol}`, {
+        const query = new URLSearchParams({ userId: String(userId), symbol: cleanSymbol });
+        const res = await fetch(`${API_BASE}/watchlist?${query}`, {
           method: 'DELETE',
           headers: authHeaders()
         });
-        if (res.ok) {
-          showToast(`Removed ${symbol} from watchlist`, 'info');
-        } else if (res.status === 401) {
-          handleUnauthorized();
+        if (!res.ok) {
+          if (res.status === 401) handleUnauthorized();
+          throw new Error(await getApiErrorMessage(res));
         }
+        showToast(`Removed ${cleanSymbol} from your watchlist`, 'info');
       }
+
+      // 2. Background confirmation sync
       await fetchBackendWatchlist();
-      updateWatchlistButtonState();
     } catch (e) {
       console.error('Failed to toggle watchlist:', e);
-      showToast('Could not update watchlist in database', 'error');
+      // Revert optimistic update on failure
+      watchlist = previousWatchlist;
+      renderWatchlistTable();
+      updateWatchlistButtonState();
+      updateAllStarButtons(cleanSymbol, isCurrentlyIn);
+      showToast(e.message || 'Could not update watchlist in database', 'error');
     }
   }
 
@@ -1388,9 +1460,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const txt = document.getElementById('modal-watchlist-text');
     if (!btn || !txt) return;
 
-    const isIn = watchlist.some(w => w.stockSymbol === activeStock.symbol);
+    const isIn = watchlist.some(w => String(w.stockSymbol || '').trim().toUpperCase() === String(activeStock.symbol || '').trim().toUpperCase());
     btn.classList.toggle('active', isIn);
     txt.textContent = isIn ? 'Saved' : 'Watchlist';
+  }
+
+  function updateAllStarButtons(symbol, isActive) {
+    const symUpper = String(symbol || '').trim().toUpperCase();
+    document.querySelectorAll(`[data-sym="${symUpper}"].search-btn-star, [data-sym="${symUpper}"].btn-table-star, [data-sym="${symUpper}"].card-btn-star`).forEach(star => {
+      star.classList.toggle('active', isActive);
+      star.textContent = isActive ? '★' : '☆';
+      star.title = isActive ? 'Remove from Watchlist' : 'Add to Watchlist';
+    });
   }
 
   const modalWlBtn = document.getElementById('modal-btn-watchlist');
