@@ -1926,6 +1926,113 @@
   text-align: center;
 }
 
+/* ==========================================================================
+   ORDER EXECUTION BUTTON & PILLS (Clear Green for BUY, Clear Red for SELL)
+   ========================================================================== */
+.order-mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.order-mode-pill {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.order-mode-pill:hover {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+
+.order-mode-pill.buy.active {
+  background: #00D09C !important;
+  color: #FFFFFF !important;
+  border-color: #00D09C !important;
+  box-shadow: 0 4px 14px rgba(0, 208, 156, 0.38) !important;
+}
+
+.order-mode-pill.sell.active {
+  background: #EB5B56 !important;
+  color: #FFFFFF !important;
+  border-color: #EB5B56 !important;
+  box-shadow: 0 4px 14px rgba(235, 91, 86, 0.38) !important;
+}
+
+.btn-execute-order {
+  width: 100%;
+  padding: 0.95rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF !important;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.btn-execute-order.buy {
+  background: #00D09C !important;
+  background: linear-gradient(135deg, #00D09C 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #00D09C !important;
+  box-shadow: 0 5px 20px rgba(0, 208, 156, 0.45) !important;
+}
+
+.btn-execute-order.buy:hover:not(:disabled) {
+  background: linear-gradient(135deg, #02b789 0%, #047857 100%) !important;
+  box-shadow: 0 7px 26px rgba(0, 208, 156, 0.6) !important;
+  transform: translateY(-1.5px);
+}
+
+.btn-execute-order.sell {
+  background: #EB5B56 !important;
+  background: linear-gradient(135deg, #EB5B56 0%, #DC2626 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #EB5B56 !important;
+  box-shadow: 0 5px 20px rgba(235, 91, 86, 0.45) !important;
+}
+
+.btn-execute-order.sell:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d94b46 0%, #b91c1c 100%) !important;
+  box-shadow: 0 7px 26px rgba(235, 91, 86, 0.6) !important;
+  transform: translateY(-1.5px);
+}
+
+.btn-execute-order:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-execute-order:disabled {
+  cursor: not-allowed;
+  opacity: 0.55 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
 /* Make table rows clickable */
 .fin-table tbody tr {
   cursor: pointer;

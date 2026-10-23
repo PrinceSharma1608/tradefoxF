@@ -71,13 +71,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   let activeOrderMode = 'BUY';
 
   // Benchmark securities for Explore tab & High-Speed Market Search
+  // Benchmark securities for Explore tab & High-Speed Market Search (90+ Top NSE/BSE Universe)
   const BENCHMARK_STOCKS = [
-    { symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', price: 2548.60, change: '+1.21%', sector: 'Energy', tags: ['nifty50', 'oil', 'telecom', 'jio'] },
+    // Benchmark Leaders & Nifty 50
+    { symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', price: 2548.60, change: '+1.21%', sector: 'Energy', tags: ['nifty50', 'oil', 'telecom', 'jio', 'ambani'] },
     { symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', price: 3520.40, change: '+0.85%', sector: 'IT', tags: ['nifty50', 'tech', 'tata', 'software'] },
     { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1682.15, change: '-0.42%', sector: 'Banking', tags: ['nifty50', 'bank', 'private', 'finance'] },
     { symbol: 'INFY', name: 'Infosys Ltd.', price: 1465.75, change: '+1.10%', sector: 'IT', tags: ['nifty50', 'tech', 'software'] },
     { symbol: 'ICICIBANK', name: 'ICICI Bank Ltd.', price: 1128.50, change: '+0.75%', sector: 'Banking', tags: ['nifty50', 'bank', 'private', 'finance'] },
-    { symbol: 'TATAMOTORS', name: 'Tata Motors Ltd.', price: 892.30, change: '+2.15%', sector: 'Auto', tags: ['nifty50', 'ev', 'tata', 'cars'] },
+    { symbol: 'TATAMOTORS', name: 'Tata Motors Ltd.', price: 892.30, change: '+2.15%', sector: 'Auto', tags: ['nifty50', 'ev', 'tata', 'cars', 'jlr'] },
     { symbol: 'SBIN', name: 'State Bank of India', price: 788.90, change: '-0.30%', sector: 'Banking', tags: ['nifty50', 'psu', 'public bank', 'sbi'] },
     { symbol: 'ITC', name: 'ITC Ltd.', price: 438.10, change: '+0.45%', sector: 'FMCG', tags: ['nifty50', 'cigarettes', 'hotels', 'fmcg'] },
     { symbol: 'BHARTIARTL', name: 'Bharti Airtel Ltd.', price: 1415.80, change: '+1.65%', sector: 'Telecom', tags: ['nifty50', '5g', 'airtel', 'telecom'] },
@@ -91,21 +93,105 @@ document.addEventListener('DOMContentLoaded', async () => {
     { symbol: 'TATASTEEL', name: 'Tata Steel Ltd.', price: 152.80, change: '+1.26%', sector: 'Metals', tags: ['nifty50', 'steel', 'metals', 'tata'] },
     { symbol: 'HCLTECH', name: 'HCL Technologies Ltd.', price: 1648.20, change: '+0.81%', sector: 'IT', tags: ['nifty50', 'tech', 'software'] },
     { symbol: 'HINDUNILVR', name: 'Hindustan Unilever Ltd.', price: 2480.00, change: '+0.59%', sector: 'FMCG', tags: ['nifty50', 'fmcg', 'consumer', 'hul'] },
-    { symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical Industries', price: 1680.50, change: '+0.93%', sector: 'Pharma', tags: ['nifty50', 'pharma', 'medicine'] },
+    { symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical Industries Ltd.', price: 1680.50, change: '+0.93%', sector: 'Pharma', tags: ['nifty50', 'pharma', 'medicine'] },
     { symbol: 'NTPC', name: 'NTPC Ltd.', price: 388.40, change: '+1.09%', sector: 'Energy', tags: ['nifty50', 'power', 'energy', 'psu'] },
-    { symbol: 'POWERGRID', name: 'Power Grid Corporation', price: 318.50, change: '+1.11%', sector: 'Energy', tags: ['nifty50', 'power', 'grid', 'psu'] },
-    { symbol: 'ONGC', name: 'Oil & Natural Gas Corporation', price: 284.10, change: '+0.92%', sector: 'Energy', tags: ['nifty50', 'oil', 'gas', 'psu'] },
+    { symbol: 'POWERGRID', name: 'Power Grid Corporation of India', price: 318.50, change: '+1.11%', sector: 'Energy', tags: ['nifty50', 'power', 'grid', 'psu'] },
+    { symbol: 'ONGC', name: 'Oil & Natural Gas Corporation Ltd.', price: 284.10, change: '+0.92%', sector: 'Energy', tags: ['nifty50', 'oil', 'gas', 'psu'] },
     { symbol: 'M&M', name: 'Mahindra & Mahindra Ltd.', price: 2780.00, change: '+1.27%', sector: 'Auto', tags: ['nifty50', 'suv', 'tractors', 'mahindra'] },
-    { symbol: 'HAL', name: 'Hindustan Aeronautics Ltd.', price: 4480.00, change: '+1.36%', sector: 'Defense', tags: ['defense', 'aerospace', 'psu'] },
-    { symbol: 'BEL', name: 'Bharat Electronics Ltd.', price: 285.50, change: '+1.28%', sector: 'Defense', tags: ['defense', 'electronics', 'psu'] },
-    { symbol: 'ZOMATO', name: 'Zomato Ltd.', price: 255.40, change: '+1.83%', sector: 'Internet', tags: ['food', 'delivery', 'blinkit'] },
-    { symbol: 'JIOFIN', name: 'Jio Financial Services Ltd.', price: 335.20, change: '+1.27%', sector: 'Finance', tags: ['fintech', 'ambani', 'jio'] },
-    { symbol: 'ADANIENT', name: 'Adani Enterprises Ltd.', price: 3120.00, change: '+1.13%', sector: 'Conglomerate', tags: ['nifty50', 'adani', 'airports'] },
-    { symbol: 'ADANIPORTS', name: 'Adani Ports & SEZ Ltd.', price: 1380.00, change: '+1.10%', sector: 'Infrastructure', tags: ['nifty50', 'adani', 'ports'] },
+    { symbol: 'HAL', name: 'Hindustan Aeronautics Ltd.', price: 4480.00, change: '+1.36%', sector: 'Defense', tags: ['defense', 'aerospace', 'psu', 'fighter jets'] },
+    { symbol: 'BEL', name: 'Bharat Electronics Ltd.', price: 285.50, change: '+1.28%', sector: 'Defense', tags: ['defense', 'electronics', 'psu', 'radars'] },
+    { symbol: 'ZOMATO', name: 'Zomato Ltd.', price: 255.40, change: '+1.83%', sector: 'Internet', tags: ['food', 'delivery', 'blinkit', 'quick commerce'] },
+    { symbol: 'JIOFIN', name: 'Jio Financial Services Ltd.', price: 335.20, change: '+1.27%', sector: 'Finance', tags: ['fintech', 'ambani', 'jio', 'finance'] },
+    { symbol: 'ADANIENT', name: 'Adani Enterprises Ltd.', price: 3120.00, change: '+1.13%', sector: 'Conglomerate', tags: ['nifty50', 'adani', 'airports', 'mining'] },
+    { symbol: 'ADANIPORTS', name: 'Adani Ports and SEZ Ltd.', price: 1380.00, change: '+1.10%', sector: 'Infrastructure', tags: ['nifty50', 'adani', 'ports', 'logistics'] },
     { symbol: 'COALINDIA', name: 'Coal India Ltd.', price: 485.60, change: '+0.96%', sector: 'Metals', tags: ['nifty50', 'coal', 'mining', 'psu'] },
-    { symbol: 'DRREDDY', name: 'Dr. Reddy\'s Laboratories', price: 6550.00, change: '+0.92%', sector: 'Pharma', tags: ['nifty50', 'pharma', 'healthcare'] },
+    { symbol: 'DRREDDY', name: 'Dr. Reddy\'s Laboratories Ltd.', price: 6550.00, change: '+0.92%', sector: 'Pharma', tags: ['nifty50', 'pharma', 'healthcare'] },
     { symbol: 'CIPLA', name: 'Cipla Ltd.', price: 1520.00, change: '+1.00%', sector: 'Pharma', tags: ['nifty50', 'pharma', 'inhalers'] },
-    { symbol: 'IRCTC', name: 'Indian Railway Catering & Tourism', price: 915.00, change: '+1.10%', sector: 'Travel', tags: ['railways', 'trains', 'psu'] }
+    { symbol: 'IRCTC', name: 'Indian Railway Catering & Tourism Corp', price: 915.00, change: '+1.10%', sector: 'Travel', tags: ['railways', 'trains', 'psu', 'tourism'] },
+
+    // Top Retail & Growth Favourites
+    { symbol: 'TATAPOWER', name: 'Tata Power Company Ltd.', price: 345.65, change: '-2.22%', sector: 'Energy', tags: ['tata', 'power', 'green', 'ev charging', 'solar', 'renewables'] },
+    { symbol: 'SUZLON', name: 'Suzlon Energy Ltd.', price: 58.40, change: '+4.85%', sector: 'Energy', tags: ['wind', 'green energy', 'renewable', 'clean tech'] },
+    { symbol: 'IREDA', name: 'Indian Renewable Energy Dev Agency', price: 172.50, change: '+3.15%', sector: 'Finance', tags: ['psu', 'green energy', 'nbfc', 'renewable funding'] },
+    { symbol: 'RVNL', name: 'Rail Vikas Nigam Ltd.', price: 340.20, change: '+2.40%', sector: 'Infrastructure', tags: ['railways', 'trains', 'psu', 'infra'] },
+    { symbol: 'IRFC', name: 'Indian Railway Finance Corporation', price: 138.90, change: '+1.80%', sector: 'Finance', tags: ['railways', 'trains', 'psu', 'finance', 'nbfc'] },
+    { symbol: 'BHEL', name: 'Bharat Heavy Electricals Ltd.', price: 218.40, change: '+1.45%', sector: 'Energy', tags: ['psu', 'power equipment', 'engineering'] },
+    { symbol: 'NHPC', name: 'NHPC Ltd.', price: 82.50, change: '+0.95%', sector: 'Energy', tags: ['hydro', 'green energy', 'psu', 'power'] },
+    { symbol: 'SJVN', name: 'SJVN Ltd.', price: 104.20, change: '+1.65%', sector: 'Energy', tags: ['hydro', 'solar', 'power', 'psu'] },
+    { symbol: 'ADANIGREEN', name: 'Adani Green Energy Ltd.', price: 1140.00, change: '+2.10%', sector: 'Energy', tags: ['adani', 'solar', 'wind', 'renewables'] },
+    { symbol: 'ADANIPOWER', name: 'Adani Power Ltd.', price: 545.00, change: '+1.85%', sector: 'Energy', tags: ['adani', 'thermal', 'power', 'energy'] },
+
+    // Retail, Consumer & Aviation
+    { symbol: 'TRENT', name: 'Trent Ltd.', price: 5420.00, change: '+3.20%', sector: 'Consumer', tags: ['tata', 'zudio', 'westside', 'fashion', 'retail'] },
+    { symbol: 'DMART', name: 'Avenue Supermarts Ltd.', price: 3680.00, change: '+0.75%', sector: 'Consumer', tags: ['supermarket', 'grocery', 'damani', 'retail'] },
+    { symbol: 'ASIANPAINT', name: 'Asian Paints Ltd.', price: 2280.00, change: '+0.45%', sector: 'Consumer', tags: ['paints', 'decor', 'home', 'coatings'] },
+    { symbol: 'NESTLEIND', name: 'Nestle India Ltd.', price: 2190.00, change: '+0.60%', sector: 'FMCG', tags: ['maggi', 'fmcg', 'food', 'milk'] },
+    { symbol: 'BRITANNIA', name: 'Britannia Industries Ltd.', price: 4890.00, change: '+0.80%', sector: 'FMCG', tags: ['biscuits', 'cookies', 'dairy', 'fmcg'] },
+    { symbol: 'PIDILITIND', name: 'Pidilite Industries Ltd.', price: 2890.00, change: '+0.95%', sector: 'Consumer', tags: ['fevicol', 'm-seal', 'adhesives', 'chemicals'] },
+    { symbol: 'BERGEPAINT', name: 'Berger Paints India Ltd.', price: 475.00, change: '+0.65%', sector: 'Consumer', tags: ['paints', 'coatings', 'decor'] },
+    { symbol: 'INDIGO', name: 'InterGlobe Aviation Ltd.', price: 4120.00, change: '+1.45%', sector: 'Travel', tags: ['airlines', 'flights', 'aviation', 'travel'] },
+    { symbol: 'DLF', name: 'DLF Ltd.', price: 745.00, change: '+1.75%', sector: 'Infrastructure', tags: ['real estate', 'property', 'housing', 'construction'] },
+
+    // Defense & Shipbuilding
+    { symbol: 'MAZDOCK', name: 'Mazagon Dock Shipbuilders Ltd.', price: 4180.00, change: '+3.60%', sector: 'Defense', tags: ['defense', 'submarines', 'navy', 'shipbuilding', 'psu'] },
+    { symbol: 'COCHINSHIP', name: 'Cochin Shipyard Ltd.', price: 1420.00, change: '+2.90%', sector: 'Defense', tags: ['defense', 'aircraft carrier', 'ships', 'psu'] },
+    { symbol: 'BDL', name: 'Bharat Dynamics Ltd.', price: 1045.00, change: '+1.90%', sector: 'Defense', tags: ['defense', 'missiles', 'torpedoes', 'psu'] },
+
+    // Banking & Financial Services
+    { symbol: 'PNB', name: 'Punjab National Bank', price: 98.40, change: '+0.85%', sector: 'Banking', tags: ['bank', 'psu bank', 'public sector'] },
+    { symbol: 'BANKBARODA', name: 'Bank of Baroda', price: 232.00, change: '+1.10%', sector: 'Banking', tags: ['bank', 'psu bank', 'bob'] },
+    { symbol: 'CANBK', name: 'Canara Bank', price: 96.50, change: '+0.70%', sector: 'Banking', tags: ['bank', 'psu bank'] },
+    { symbol: 'IDFCFIRSTB', name: 'IDFC First Bank Ltd.', price: 62.80, change: '+1.20%', sector: 'Banking', tags: ['bank', 'private bank', 'credit card'] },
+    { symbol: 'FEDERALBNK', name: 'The Federal Bank Ltd.', price: 182.00, change: '+0.95%', sector: 'Banking', tags: ['bank', 'south bank', 'private'] },
+    { symbol: 'MUTHOOTFIN', name: 'Muthoot Finance Ltd.', price: 1980.00, change: '+1.40%', sector: 'Finance', tags: ['gold loan', 'nbfc', 'lending'] },
+    { symbol: 'CHOLAFIN', name: 'Cholamandalam Investment & Finance', price: 1320.00, change: '+1.15%', sector: 'Finance', tags: ['vehicle finance', 'murugappa', 'nbfc'] },
+    { symbol: 'SHRIRAMFIN', name: 'Shriram Finance Ltd.', price: 2890.00, change: '+1.50%', sector: 'Finance', tags: ['commercial vehicle', 'nbfc', 'lending'] },
+    { symbol: 'LICI', name: 'Life Insurance Corporation of India', price: 890.00, change: '+0.60%', sector: 'Finance', tags: ['insurance', 'lic', 'psu', 'life insurance'] },
+    { symbol: 'SBILIFE', name: 'SBI Life Insurance Company Ltd.', price: 1540.00, change: '+0.85%', sector: 'Finance', tags: ['insurance', 'sbi', 'life insurance'] },
+    { symbol: 'HDFCLIFE', name: 'HDFC Life Insurance Company Ltd.', price: 685.00, change: '+0.75%', sector: 'Finance', tags: ['insurance', 'hdfc', 'life insurance'] },
+
+    // Fintech, Depository & Broking
+    { symbol: 'PAYTM', name: 'One97 Communications Ltd. (Paytm)', price: 685.00, change: '+2.80%', sector: 'Finance', tags: ['fintech', 'payments', 'upi', 'soundbox', 'qr'] },
+    { symbol: 'CDSL', name: 'Central Depository Services Ltd.', price: 1380.00, change: '+2.40%', sector: 'Finance', tags: ['depository', 'demat', 'bse', 'monopoly'] },
+    { symbol: 'ANGELONE', name: 'Angel One Ltd.', price: 2640.00, change: '+1.90%', sector: 'Finance', tags: ['broking', 'fintech', 'trading', 'demat'] },
+
+    // Auto & Mobility Leaders
+    { symbol: 'EICHERMOT', name: 'Eicher Motors Ltd.', price: 4780.00, change: '+1.60%', sector: 'Auto', tags: ['royal enfield', 'bullet', 'bikes', 'motorcycles'] },
+    { symbol: 'HEROMOTOCO', name: 'Hero MotoCorp Ltd.', price: 4320.00, change: '+0.85%', sector: 'Auto', tags: ['two wheeler', 'splendor', 'motorcycles'] },
+    { symbol: 'BAJAJ-AUTO', name: 'Bajaj Auto Ltd.', price: 8950.00, change: '+1.15%', sector: 'Auto', tags: ['pulsar', 'chetak ev', 'two wheeler', 'auto'] },
+    { symbol: 'TVSMOTOR', name: 'TVS Motor Company Ltd.', price: 2380.00, change: '+1.40%', sector: 'Auto', tags: ['apache', 'jupiter', 'iqube ev', 'two wheeler'] },
+    { symbol: 'MOTHERSON', name: 'Samvardhana Motherson International', price: 145.00, change: '+1.20%', sector: 'Auto', tags: ['auto parts', 'wiring', 'mirrors', 'global'] },
+
+    // IT & Tech Exports
+    { symbol: 'TECHM', name: 'Tech Mahindra Ltd.', price: 1580.00, change: '+1.10%', sector: 'IT', tags: ['telecom it', 'software', 'mahindra'] },
+    { symbol: 'LTIM', name: 'LTIMindtree Ltd.', price: 5680.00, change: '+1.25%', sector: 'IT', tags: ['lt', 'software', 'tech', 'cloud'] },
+    { symbol: 'PERSISTENT', name: 'Persistent Systems Ltd.', price: 5450.00, change: '+2.10%', sector: 'IT', tags: ['software', 'product engineering', 'cloud'] },
+    { symbol: 'COFORGE', name: 'Coforge Ltd.', price: 6850.00, change: '+1.80%', sector: 'IT', tags: ['travel tech', 'bfsi', 'software'] },
+
+    // Metals, Mining & Resources
+    { symbol: 'VEDL', name: 'Vedanta Ltd.', price: 440.00, change: '+2.30%', sector: 'Metals', tags: ['zinc', 'aluminum', 'oil', 'mining', 'dividend'] },
+    { symbol: 'JSWSTEEL', name: 'JSW Steel Ltd.', price: 940.00, change: '+1.10%', sector: 'Metals', tags: ['steel', 'jindal', 'metals', 'manufacturing'] },
+    { symbol: 'HINDALCO', name: 'Hindalco Industries Ltd.', price: 645.00, change: '+1.45%', sector: 'Metals', tags: ['aluminum', 'copper', 'novelis', 'aditya birla'] },
+    { symbol: 'JINDALSTEL', name: 'Jindal Steel & Power Ltd.', price: 885.00, change: '+1.35%', sector: 'Metals', tags: ['steel', 'power', 'infra'] },
+    { symbol: 'NMDC', name: 'NMDC Ltd.', price: 215.00, change: '+1.25%', sector: 'Metals', tags: ['iron ore', 'mining', 'psu'] },
+
+    // Oil, Gas & Refineries
+    { symbol: 'BPCL', name: 'Bharat Petroleum Corporation Ltd.', price: 285.00, change: '+1.05%', sector: 'Energy', tags: ['petrol', 'diesel', 'refinery', 'psu'] },
+    { symbol: 'IOC', name: 'Indian Oil Corporation Ltd.', price: 135.00, change: '+0.80%', sector: 'Energy', tags: ['petrol', 'diesel', 'oil', 'psu'] },
+    { symbol: 'GAIL', name: 'GAIL (India) Ltd.', price: 185.00, change: '+1.15%', sector: 'Energy', tags: ['gas pipeline', 'cng', 'lpg', 'psu'] },
+
+    // Cement & Infra Materials
+    { symbol: 'ULTRACEMCO', name: 'UltraTech Cement Ltd.', price: 10850.00, change: '+0.90%', sector: 'Infrastructure', tags: ['cement', 'aditya birla', 'construction'] },
+    { symbol: 'AMBUJACEM', name: 'Ambuja Cements Ltd.', price: 540.00, change: '+1.10%', sector: 'Infrastructure', tags: ['cement', 'adani', 'construction'] },
+    { symbol: 'GRASIM', name: 'Grasim Industries Ltd.', price: 2520.00, change: '+0.70%', sector: 'Conglomerate', tags: ['textiles', 'chemicals', 'paints', 'birla'] },
+    { symbol: 'IDEA', name: 'Vodafone Idea Ltd.', price: 7.45, change: '+2.05%', sector: 'Telecom', tags: ['vi', 'vodafone', 'telecom', '5g'] },
+
+    // Healthcare, Hospitals & Pharma
+    { symbol: 'APOLLOHOSP', name: 'Apollo Hospitals Enterprise Ltd.', price: 6850.00, change: '+1.30%', sector: 'Pharma', tags: ['hospitals', 'pharmacy', 'apollo 247', 'healthcare'] },
+    { symbol: 'MAXHEALTH', name: 'Max Healthcare Institute Ltd.', price: 920.00, change: '+1.80%', sector: 'Pharma', tags: ['hospitals', 'healthcare', 'delhi ncr'] },
+    { symbol: 'MANKIND', name: 'Mankind Pharma Ltd.', price: 2480.00, change: '+1.15%', sector: 'Pharma', tags: ['manforce', 'gas-o-fast', 'prega news', 'fmcg pharma'] },
+    { symbol: 'LUPIN', name: 'Lupin Ltd.', price: 2040.00, change: '+1.40%', sector: 'Pharma', tags: ['generics', 'pharma', 'exports'] },
+    { symbol: 'AUROPHARMA', name: 'Aurobindo Pharma Ltd.', price: 1240.00, change: '+0.95%', sector: 'Pharma', tags: ['generics', 'pharma', 'injectables'] }
   ];
 
   // --------------------------------------------------------------------------
@@ -451,9 +537,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     if (tabId === 'explore') renderExploreView(marketQuotes);
-    if (tabId === 'holdings') fetchBackendHoldings();
-    if (tabId === 'orders') fetchBackendOrders();
-    if (tabId === 'watchlist') fetchBackendWatchlist();
+    if (tabId === 'holdings') {
+      renderHoldingsTable();
+      fetchBackendHoldings();
+    }
+    if (tabId === 'orders') {
+      renderOrdersTable('all');
+      fetchBackendOrders();
+    }
+    if (tabId === 'watchlist') {
+      renderWatchlistTable();
+      fetchBackendWatchlist();
+    }
   }
 
   navTabs.forEach(tab => {
@@ -824,12 +919,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const invested = Number(h.investedAmount) || (qty * avg);
       const live = dataObj[h.stockSymbol];
       const benchmark = BENCHMARK_STOCKS.find(b => b.symbol === h.stockSymbol);
+      // Priority: 1. Live market feed, 2. Last known holding price, 3. Purchase price (avg).
+      // Strictly avoid falling back to benchmark.price which causes instant phantom profit/loss!
       const currentPrice = (live && (live.live_price || live.price)) 
         ? Number(live.live_price || live.price) 
-        : (benchmark ? benchmark.price : avg);
+        : (lastKnownStockPrices['HOLDING_' + h.stockSymbol] || avg);
       const currentValue = qty * currentPrice;
-      const pnl = currentValue - invested;
-      const pnlPct = invested > 0 ? ((pnl / invested) * 100).toFixed(2) : '0.00';
+      let pnl = currentValue - invested;
+      if (Math.abs(pnl) < 0.01) pnl = 0.00;
+      const pnlPct = invested > 0 && Math.abs(pnl) >= 0.01 ? ((pnl / invested) * 100).toFixed(2) : '0.00';
       const isPositive = pnl >= 0;
 
       // Stock Day Change (per share)
@@ -1495,6 +1593,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  let searchDebounceTimer = null;
+
+  function renderSearchResultsUI(results, q) {
+    if (results.length > 0) {
+      searchResultsList.innerHTML = `
+        <div class="dropdown-header">
+          <span>Results (${results.length})</span>
+          ${activeSearchSector !== 'all' ? `<span style="font-size: 0.68rem; color: var(--primary);">Filtered by ${activeSearchSector}</span>` : ''}
+        </div>
+        ${results.map((item, idx) => renderSearchItemHtml(item, q, idx)).join('')}
+      `;
+      bindSearchItemEvents();
+    } else {
+      searchResultsList.innerHTML = `
+        <div style="padding: 2.25rem 1rem; text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.7;">🔍</div>
+          <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.35rem;">No stocks found for "${escapeHtml(q)}"</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); max-width: 280px; margin: 0 auto; line-height: 1.4;">
+            No listed security matches this query. Please search by symbol or company name (e.g. RELIANCE, TCS, TATAPOWER).
+          </div>
+        </div>
+      `;
+    }
+  }
+
   function performStockSearch(query) {
     if (!searchResultsList) return;
     const q = query.trim().toUpperCase();
@@ -1502,6 +1625,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSearchIndex = -1;
 
     if (q.length === 0) {
+      if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
       renderDefaultSearchMenu();
       return;
     }
@@ -1546,26 +1670,48 @@ document.addEventListener('DOMContentLoaded', async () => {
       return aSym.localeCompare(bSym);
     });
 
-    if (results.length > 0) {
-      searchResultsList.innerHTML = `
-        <div class="dropdown-header">
-          <span>Results (${results.length})</span>
-          ${activeSearchSector !== 'all' ? `<span style="font-size: 0.68rem; color: var(--primary);">Filtered by ${activeSearchSector}</span>` : ''}
-        </div>
-        ${results.map((item, idx) => renderSearchItemHtml(item, q, idx)).join('')}
-      `;
-      bindSearchItemEvents();
-    } else {
-      // No matches found in exchange directory
-      searchResultsList.innerHTML = `
-        <div style="padding: 2.25rem 1rem; text-align: center;">
-          <div style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.7;">🔍</div>
-          <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.35rem;">No stocks found for "${escapeHtml(q)}"</div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); max-width: 280px; margin: 0 auto; line-height: 1.4;">
-            No listed security matches this query. Please search by symbol or company name (e.g. RELIANCE, TCS, HDFC).
-          </div>
-        </div>
-      `;
+    renderSearchResultsUI(results, q);
+
+    // Hybrid Backend Search expansion (debounced 200ms)
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    if (q.length >= 2) {
+      searchDebounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`${API_BASE}/market/stocks/search?q=${encodeURIComponent(q)}&limit=10`);
+          if (res.ok) {
+            const backendResults = await res.json();
+            // Ensure search input hasn't changed while awaiting response
+            if (searchInput && searchInput.value.trim().toUpperCase() === q) {
+              backendResults.forEach(b => {
+                const existing = BENCHMARK_STOCKS.find(s => s.symbol.toUpperCase() === b.stockSymbol.toUpperCase());
+                if (!existing) {
+                  BENCHMARK_STOCKS.push({
+                    symbol: b.stockSymbol,
+                    name: b.stockName,
+                    price: 100.0,
+                    change: '+0.00%',
+                    sector: 'Equity',
+                    tags: [b.stockSymbol.toLowerCase()]
+                  });
+                }
+                if (!results.some(r => r.symbol.toUpperCase() === b.stockSymbol.toUpperCase())) {
+                  results.push({
+                    symbol: b.stockSymbol,
+                    name: b.stockName,
+                    price: 100.0,
+                    change: '+0.00%',
+                    sector: 'Equity',
+                    tags: []
+                  });
+                }
+              });
+              renderSearchResultsUI(results, q);
+            }
+          }
+        } catch (e) {
+          // Fall back gracefully to local index results
+        }
+      }, 200);
     }
   }
 
@@ -1741,16 +1887,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cleanSym = symbol ? symbol.trim().toUpperCase() : '';
     if (!cleanSym) return;
 
-    // Strict validation: Verify the stock exists in the benchmark universe or live market data
-    const benchmarkItem = BENCHMARK_STOCKS.find(s => s.symbol.toUpperCase() === cleanSym);
+    let benchmarkItem = BENCHMARK_STOCKS.find(s => s.symbol.toUpperCase() === cleanSym);
     const liveItem = marketQuotes && marketQuotes.data && marketQuotes.data[cleanSym];
-    if (!benchmarkItem && !liveItem) {
-      showToast(`Stock "${cleanSym}" does not exist in the exchange directory`, 'error');
-      return;
-    }
 
     activeStock.symbol = cleanSym;
-    activeStock.name = benchmarkItem ? benchmarkItem.name : cleanSym;
+    activeStock.name = benchmarkItem ? benchmarkItem.name : (liveItem ? liveItem.name : cleanSym);
     activeStock.range = '1D';
     activeOrderMode = mode;
 
@@ -1760,7 +1901,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalStockSymbol.textContent = cleanSym;
     modalStockExchange.textContent = 'NSE';
     modalStockSector.textContent = benchmarkItem ? benchmarkItem.sector : 'Equity';
-    modalStockFullname.textContent = benchmarkItem ? benchmarkItem.name : 'Loading company details...';
+    modalStockFullname.textContent = benchmarkItem ? benchmarkItem.name : (liveItem ? liveItem.name : 'Loading company details...');
     if (initialPrice) modalStockLtp.textContent = formatCurrency(initialPrice);
 
     // If opening in SELL mode (e.g. clicking Exit on a holding), prefill quantity to available holding
@@ -1780,17 +1921,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const res = await fetch(`${API_BASE}/market/stocks/details?symbol=${cleanSym}`);
       if (!res.ok) {
-        closeStockTerminal();
-        showToast(`Stock "${cleanSym}" is not available in market data`, 'error');
-        return;
-      }
-      const details = await res.json();
-      activeStock.name = details.name;
-      activeStock.exchange = details.exchange;
-      activeStock.price = Number(details.price);
-      activeStock.dayChange = Number(details.dayChange);
-      activeStock.dayChangePercentage = Number(details.dayChangePercentage);
-      activeStock.direction = details.direction;
+        const qRes = await fetch(`${API_BASE}/market/stocks?name=${cleanSym}`);
+        if (!qRes.ok && !benchmarkItem && !liveItem) {
+          closeStockTerminal();
+          showToast(`Stock "${cleanSym}" does not exist in exchange directory`, 'error');
+          return;
+        }
+      } else {
+        const details = await res.json();
+        activeStock.name = details.name;
+        activeStock.exchange = details.exchange;
+        activeStock.price = Number(details.price);
+        activeStock.dayChange = Number(details.dayChange);
+        activeStock.dayChangePercentage = Number(details.dayChangePercentage);
+        activeStock.direction = details.direction;
+
+        if (!benchmarkItem) {
+          benchmarkItem = {
+            symbol: details.symbol,
+            name: details.name,
+            price: Number(details.price),
+            change: `${details.dayChangePercentage >= 0 ? '+' : ''}${Number(details.dayChangePercentage).toFixed(2)}%`,
+            sector: details.sector || 'Equity',
+            tags: [details.symbol.toLowerCase()]
+          };
+          BENCHMARK_STOCKS.push(benchmarkItem);
+        }
 
       modalStockSymbol.textContent = details.symbol;
       modalStockFullname.textContent = details.name;
@@ -1835,6 +1991,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Set order price input to live price
         if (orderPriceInput) orderPriceInput.value = details.price.toFixed(2);
+      }
     } catch (e) {
       console.warn('Could not load stock details:', e);
       closeStockTerminal();
@@ -2136,10 +2293,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updateExecuteButtonText() {
     if (!btnExecuteOrder) return;
     const price = parseFloat(orderPriceInput.value) || activeStock.price || 100.0;
+    const isBuy = activeOrderMode === 'BUY';
+    const tag = isBuy ? 'BUY' : 'SELL';
     if (activeExecutionType === 'MARKET') {
-      btnExecuteOrder.textContent = `${activeOrderMode} ${activeStock.symbol} (Market)`;
+      btnExecuteOrder.textContent = `${isBuy ? '🟢' : '🔴'} ${tag} ${activeStock.symbol} (Market)`;
     } else {
-      btnExecuteOrder.textContent = `Set Limit ${activeOrderMode} @ ${formatCurrency(price)}`;
+      btnExecuteOrder.textContent = `${isBuy ? '🟢' : '🔴'} Set Limit ${tag} @ ${formatCurrency(price)}`;
     }
   }
 
@@ -2276,7 +2435,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     orderForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const qty = parseInt(orderQtyInput.value, 10) || 1;
-      const price = parseFloat(orderPriceInput.value) || activeStock.price;
+      let price = parseFloat(orderPriceInput.value) || activeStock.price;
+
+      if (activeExecutionType === 'MARKET') {
+        const live = marketQuotes && marketQuotes.data && marketQuotes.data[activeStock.symbol];
+        if (live && live.live_price) {
+          activeStock.price = Number(live.live_price);
+        }
+        price = activeStock.price;
+      }
 
       btnExecuteOrder.disabled = true;
       btnExecuteOrder.textContent = 'Executing in Database...';
@@ -2309,6 +2476,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const orderResult = await res.json();
+        const execPrice = Number(orderResult.price) || price;
+        lastKnownStockPrices['HOLDING_' + activeStock.symbol] = execPrice;
 
         // Update local user wallet balance
         liveUser.walletBalance = Number(orderResult.remainingWalletBalance);
