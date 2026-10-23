@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeFox — Paper Trading Terminal</title>
+  <meta name="description" content="TradeFox Paper Trading Terminal - Explore markets, track holdings, manage orders, and test strategies risk-free." />
+
+  <!-- Clean Fintech Typography (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ====================================================================
+         LAYER 1: TOP NAVIGATION BAR
+         - Top Left: App Logo + Welcome to TradeFox, $name
+         - Middle: Stock Search Bar
+         - Top Right: Profile Option with Wallet Balance Popup & Theme Toggle
+         ==================================================================== -->
+    <header class="dashboard-header">
+      
+      <!-- Top Left: Welcome & Brand -->
+      <div class="header-left">
+        <!-- DUMMY APP LOGO: Replace 'assets/dummy-logo.svg' with your actual logo -->
+        <a href="dashboard.html" class="dash-brand-link" title="TradeFox Terminal">
+          <img src="assets/dummy-logo.svg" alt="TradeFox Logo" id="app-logo" class="dash-logo" />
+        </a>
+        <div class="welcome-heading">
+          <span class="welcome-text">Welcome to TradeFox, <strong id="user-display-name">--</strong></span>
+          <span class="badge-paper">Paper Trading</span>
+        </div>
+      </div>
+
+      <!-- Middle: Stock Search Bar -->
+      <div class="header-center">
+        <div class="search-container" id="search-container">
+          <span class="search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input 
+            type="text" 
+            id="stock-search-input" 
+            class="search-input" 
+            placeholder="Search stock symbol, company or sector (e.g. RELIANCE, TATA, Bank)..."
+            autocomplete="off"
+            spellcheck="false" />
+          <button type="button" id="search-clear-btn" class="search-clear-btn hidden" aria-label="Clear search" title="Clear">✕</button>
+          <kbd class="search-shortcut">Ctrl K</kbd>
+
+          <!-- Autocomplete Dropdown Menu -->
+          <div class="search-dropdown hidden" id="search-dropdown">
+            <!-- Sector Quick Filter Strip -->
+            <div class="search-filter-pills" id="search-filter-pills">
+              <button type="button" class="search-pill active" data-filter="all">All</button>
+              <button type="button" class="search-pill" data-filter="Banking">Banking</button>
+              <button type="button" class="search-pill" data-filter="IT">IT</button>
+              <button type="button" class="search-pill" data-filter="Auto">Auto</button>
+              <button type="button" class="search-pill" data-filter="Energy">Energy</button>
+              <button type="button" class="search-pill" data-filter="Pharma">Pharma</button>
+              <button type="button" class="search-pill" data-filter="Defense">Defense</button>
+            </div>
+
+            <div class="search-results-list" id="search-results-list">
+              <!-- Dynamically populated from backend query -->
+            </div>
+
+            <div class="search-dropdown-footer">
+              <div class="footer-tip">
+                <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                <span><kbd>↵</kbd> View Terminal</span>
+                <span><kbd>Esc</kbd> Close</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Right: Profile & Theme Toggle -->
+      <div class="header-right">
+        <!-- Theme Switcher -->
+        <button id="theme-toggle" class="theme-btn-compact" aria-label="Toggle theme" title="Toggle Light / Dark mode">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Profile Button (Triggers Wallet & Account Popup) -->
+        <div class="profile-menu-container">
+          <button id="profile-btn" class="profile-btn" aria-haspopup="true" aria-expanded="false" title="View Profile & Wallet Balance">
+            <div class="avatar-circle" id="user-avatar-initial">--</div>
+            <span class="profile-name-label" id="profile-btn-name">Account</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Groww-style Profile & Wallet Balance Popup Modal -->
+          <div class="profile-popup hidden" id="profile-popup" role="dialog" aria-modal="true">
+            <div class="popup-arrow"></div>
+            
+            <!-- User Summary Header -->
+            <div class="popup-user-header">
+              <div class="popup-avatar" id="popup-avatar-initial">--</div>
+              <div class="popup-user-details">
+                <div class="popup-user-name" id="popup-user-name">Loading user...</div>
+                <div class="popup-user-email" id="popup-user-email">--</div>
+              </div>
+            </div>
+
+            <!-- WALLET BALANCE SECTION -->
+            <div class="popup-wallet-card">
+              <div class="wallet-card-header">
+                <div class="wallet-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                  </svg>
+                  <span>Paper Wallet Balance</span>
+                </div>
+                <button type="button" class="btn-refresh-balance" id="btn-refresh-balance" title="Sync from Server">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="wallet-amount" id="popup-wallet-amount">
+                ₹0<span class="cents">.00</span>
+              </div>
+              <div class="wallet-subtext">Verified Virtual Balance</div>
+
+              <div class="wallet-metrics-grid">
+                <div class="wallet-metric">
+                  <span class="metric-label">Invested in Holdings</span>
+                  <span class="metric-val" id="popup-invested-val">₹0.00</span>
+                </div>
+                <div class="wallet-metric">
+                  <span class="metric-label">Total Account Value</span>
+                  <span class="metric-val highlight" id="popup-total-val">₹0.00</span>
+                </div>
+              </div>
+
+              <div class="wallet-actions">
+                <button type="button" class="btn-wallet-action primary" id="btn-add-virtual-funds">
+                  + Add Virtual Funds
+                </button>
+                <button type="button" class="btn-wallet-action secondary" id="btn-reset-wallet">
+                  Reset Balance
+                </button>
+              </div>
+            </div>
+
+            <!-- Account Details & Actions -->
+            <div class="popup-links-list">
+              <div class="popup-info-row">
+                <span class="info-label">Account Mode</span>
+                <span class="info-tag tag-simulated">Paper Simulation</span>
+              </div>
+              <div class="popup-info-row">
+                <span class="info-label">User ID</span>
+                <span class="info-val" id="popup-user-id">--</span>
+              </div>
+            </div>
+
+            <div class="popup-footer">
+              <button type="button" class="btn-logout" id="btn-logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         LAYER 2: MAJOR INDICES STRIP
+         Showing real scores of NIFTY 50, SENSEX, BANK NIFTY, NIFTY IT, INDIA VIX
+         ==================================================================== -->
+    <section class="indices-strip-section" aria-label="Major Indices Ticker">
+      <div class="indices-strip-inner">
+        
+        <!-- NIFTY 50 -->
+        <div class="index-box" data-index="NIFTY 50">
+          <div class="index-name">NIFTY 50</div>
+          <div class="index-score-row">
+            <span class="index-val" id="val-nifty">--</span>
+            <span class="index-change" id="change-nifty">--</span>
+          </div>
+        </div>
+
+        <!-- SENSEX -->
+        <div class="index-box" data-index="SENSEX">
+          <div class="index-name">SENSEX</div>
+          <div class="index-score-row">
+            <span class="index-val" id="val-sensex">--</span>
+            <span class="index-change" id="change-sensex">--</span>
+          </div>
+        </div>
+
+        <!-- BANK NIFTY -->
+        <div class="index-box" data-index="BANK NIFTY">
+          <div class="index-name">BANK NIFTY</div>
+          <div class="index-score-row">
+            <span class="index-val" id="val-banknifty">--</span>
+            <span class="index-change" id="change-banknifty">--</span>
+          </div>
+        </div>
+
+        <!-- NIFTY IT -->
+        <div class="index-box" data-index="NIFTY IT">
+          <div class="index-name">NIFTY IT</div>
+          <div class="index-score-row">
+            <span class="index-val" id="val-niftyit">--</span>
+            <span class="index-change" id="change-niftyit">--</span>
+          </div>
+        </div>
+
+        <!-- INDIA VIX -->
+        <div class="index-box" data-index="INDIA VIX">
+          <div class="index-name">INDIA VIX</div>
+          <div class="index-score-row">
+            <span class="index-val" id="val-vix">--</span>
+            <span class="index-change" id="change-vix">--</span>
+          </div>
+        </div>
+
+        <!-- Feed Status Indicator -->
+        <div class="market-status-indicator" id="market-feed-status">
+          <span class="live-pulse"></span>
+          <span class="status-title" id="status-title-text">Awaiting Live Feed</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         LAYER 3: NAVIGATION STRIP
+         "Explore", "Holdings", "Orders", "Watchlist"
+         ==================================================================== -->
+    <nav class="nav-strip" aria-label="Main Terminal Sections">
+      <div class="nav-strip-inner">
+        <div class="tabs-navigation" role="tablist">
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-btn-explore" 
+            class="nav-tab active" 
+            aria-selected="true" 
+            aria-controls="view-explore"
+            data-tab="explore">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+            <span>Explore</span>
+          </button>
+
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-btn-holdings" 
+            class="nav-tab" 
+            aria-selected="false" 
+            aria-controls="view-holdings"
+            data-tab="holdings">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span>Holdings</span>
+            <span class="tab-badge" id="holdings-count-badge">0</span>
+          </button>
+
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-btn-orders" 
+            class="nav-tab" 
+            aria-selected="false" 
+            aria-controls="view-orders"
+            data-tab="orders">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Orders</span>
+          </button>
+
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-btn-watchlist" 
+            class="nav-tab" 
+            aria-selected="false" 
+            aria-controls="view-watchlist"
+            data-tab="watchlist">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Watchlist</span>
+          </button>
+        </div>
+
+        <div class="nav-strip-actions">
+          <button type="button" class="btn-quick-buy" id="btn-quick-trade-modal">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>New Order</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ====================================================================
+         MAIN BODY CONTENT (Tab Views)
+         ==================================================================== -->
+    <main class="dashboard-main-content">
+
+      <!-- VIEW 1: EXPLORE -->
+      <section id="view-explore" class="tab-view active" role="tabpanel" aria-labelledby="tab-btn-explore">
+        <div class="view-header-row">
+          <div>
+            <h2 class="section-title">Market Feed</h2>
+            <p class="section-subtitle">Real-time data directly from the connected backend market service</p>
+          </div>
+          <div class="market-time-badge" id="backend-status-tag">
+            <span class="dot-online"></span> Connected to Backend
+          </div>
+        </div>
+
+        <div id="explore-content-area">
+          <!-- Dynamically populated from backend /api/market/quotes -->
+        </div>
+      </section>
+
+      <!-- VIEW 2: HOLDINGS -->
+      <section id="view-holdings" class="tab-view hidden" role="tabpanel" aria-labelledby="tab-btn-holdings">
+        
+        <!-- Portfolio Value Banner (Real Totals) -->
+        <div class="holdings-summary-banner">
+          <div class="summary-col">
+            <span class="summary-label">Current Value</span>
+            <span class="summary-value" id="holdings-total-current">₹0.00</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-col">
+            <span class="summary-label">Total Investment</span>
+            <span class="summary-value" id="holdings-total-invested">₹0.00</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-col">
+            <span class="summary-label">Total Returns (P&amp;L)</span>
+            <span class="summary-value" id="holdings-total-pnl">₹0.00 (0.00%)</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-col">
+            <span class="summary-label">1-Day Returns</span>
+            <span class="summary-value" id="holdings-day-pnl">₹0.00 (0.00%)</span>
+          </div>
+        </div>
+
+        <!-- Holdings Table -->
+        <div class="stocks-table-card">
+          <table class="fin-table" id="holdings-table">
+            <thead>
+              <tr>
+                <th>Stock Instrument</th>
+                <th>Qty</th>
+                <th>Avg. Cost</th>
+                <th>Current LTP</th>
+                <th>Current Value</th>
+                <th>1-Day Return</th>
+                <th>Overall Returns</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="holdings-table-body">
+              <!-- Dynamically populated from real user holdings -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 3: ORDERS -->
+      <section id="view-orders" class="tab-view hidden" role="tabpanel" aria-labelledby="tab-btn-orders">
+        <div class="view-header-row">
+          <div>
+            <h2 class="section-title">Order Book</h2>
+            <p class="section-subtitle">Real-time log of paper orders executed during this session</p>
+          </div>
+          <div class="orders-filter-pills">
+            <button type="button" class="order-filter-pill active" data-filter="all">All</button>
+            <button type="button" class="order-filter-pill" data-filter="EXECUTED">Executed</button>
+            <button type="button" class="order-filter-pill" data-filter="PENDING">Pending</button>
+          </div>
+        </div>
+
+        <div class="stocks-table-card">
+          <table class="fin-table" id="orders-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Instrument</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <!-- Dynamically populated from real user orders -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 4: WATCHLIST -->
+      <section id="view-watchlist" class="tab-view hidden" role="tabpanel" aria-labelledby="tab-btn-watchlist">
+        <div class="view-header-row">
+          <div>
+            <h2 class="section-title">Your Watchlist</h2>
+            <p class="section-subtitle">Stocks and instruments you are currently tracking</p>
+          </div>
+          <div class="watchlist-controls">
+            <span class="watchlist-tag" id="watchlist-count-tag">0 Securities</span>
+          </div>
+        </div>
+
+        <div class="stocks-table-card">
+          <table class="fin-table" id="watchlist-table">
+            <thead>
+              <tr>
+                <th>Instrument</th>
+                <th>Exchange</th>
+                <th>Current LTP</th>
+                <th>Day Change</th>
+                <th class="text-right">Paper Actions</th>
+              </tr>
+            </thead>
+            <tbody id="watchlist-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ====================================================================
+       INTERACTIVE STOCK TERMINAL WINDOW & PAPER ORDER PANEL
+       ==================================================================== -->
+  <div class="modal-backdrop hidden" id="order-modal-backdrop">
+    <div class="stock-terminal-window" id="order-modal">
+      
+      <!-- Top Window Bar: Stock Info, LTP, Watchlist Star, Close -->
+      <div class="terminal-window-header">
+        <div class="stock-identity">
+          <div class="stock-title-row">
+            <h2 class="terminal-stock-symbol" id="modal-stock-symbol">RELIANCE</h2>
+            <span class="stock-exchange-badge" id="modal-stock-exchange">NSE</span>
+            <span class="stock-sector-badge" id="modal-stock-sector">Energy</span>
+          </div>
+          <div class="terminal-stock-fullname" id="modal-stock-fullname">Reliance Industries Ltd.</div>
+        </div>
+
+        <div class="stock-price-block">
+          <div class="terminal-stock-ltp" id="modal-stock-ltp">₹0.00</div>
+          <div class="terminal-stock-change" id="modal-stock-change">--</div>
+        </div>
+
+        <div class="window-top-actions">
+          <button type="button" class="btn-watchlist-toggle" id="modal-btn-watchlist" title="Toggle Watchlist">
+            <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span id="modal-watchlist-text">Watchlist</span>
+          </button>
+          <button type="button" class="window-close-btn" id="modal-close-btn" aria-label="Close Window">&times;</button>
+        </div>
+      </div>
+
+      <!-- Main Window Content: Left = Graph & Technicals; Right = Buy/Sell Order Panel -->
+      <div class="terminal-window-grid">
+        
+        <!-- Left / Center Column: Interactive Graph & Technicals -->
+        <div class="terminal-analytics-col">
+          
+          <!-- Chart Header & Timeframe Pills -->
+          <div class="chart-header-row">
+            <div class="chart-title">
+              <span>Interactive Price Chart</span>
+              <span class="chart-live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="timeframe-selector" id="chart-timeframes">
+              <button type="button" class="tf-btn active" data-range="1D">1D</button>
+              <button type="button" class="tf-btn" data-range="1W">1W</button>
+              <button type="button" class="tf-btn" data-range="1M">1M</button>
+              <button type="button" class="tf-btn" data-range="1Y">1Y</button>
+              <button type="button" class="tf-btn" data-range="ALL">ALL</button>
+            </div>
+          </div>
+
+          <!-- Interactive Chart Canvas Container -->
+          <div class="stock-chart-container" id="stock-chart-wrapper">
+            <canvas id="stock-chart-canvas" width="620" height="260"></canvas>
+            <div class="chart-crosshair-tooltip hidden" id="chart-tooltip">
+              <span class="tooltip-time" id="tooltip-time">--</span>
+              <span class="tooltip-price" id="tooltip-price">--</span>
+            </div>
+          </div>
+
+          <!-- Range Slider Bars: Day's Range & 52W Range -->
+          <div class="range-sliders-section">
+            <div class="range-slider-group">
+              <div class="range-labels">
+                <span class="lbl">Today's Low: <strong id="tech-day-low">₹0.00</strong></span>
+                <span class="range-name">Day Range</span>
+                <span class="lbl text-right">Today's High: <strong id="tech-day-high">₹0.00</strong></span>
+              </div>
+              <div class="range-bar-track">
+                <div class="range-bar-fill" id="track-day-fill"></div>
+                <div class="range-marker" id="marker-day" title="Current Price"></div>
+              </div>
+            </div>
+
+            <div class="range-slider-group">
+              <div class="range-labels">
+                <span class="lbl">52W Low: <strong id="tech-52w-low">₹0.00</strong></span>
+                <span class="range-name">52-Week Range</span>
+                <span class="lbl text-right">52W High: <strong id="tech-52w-high">₹0.00</strong></span>
+              </div>
+              <div class="range-bar-track">
+                <div class="range-bar-fill" id="track-52w-fill"></div>
+                <div class="range-marker" id="marker-52w" title="Current Price"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technicals & Market Depth Key Ratios -->
+          <div class="technicals-card">
+            <h4 class="technicals-heading">Key Technicals &amp; Fundamentals</h4>
+            <div class="technicals-grid">
+              <div class="tech-item">
+                <span class="tech-lbl">Open Price</span>
+                <span class="tech-val" id="tech-open">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Prev. Close</span>
+                <span class="tech-val" id="tech-prev-close">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Volume (Traded)</span>
+                <span class="tech-val" id="tech-volume">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Upper Circuit (+20%)</span>
+                <span class="tech-val text-primary" id="tech-upper-circuit">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Lower Circuit (-20%)</span>
+                <span class="tech-val text-danger" id="tech-lower-circuit">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Market Cap</span>
+                <span class="tech-val" id="tech-market-cap">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">P/E Ratio</span>
+                <span class="tech-val" id="tech-pe">--</span>
+              </div>
+              <div class="tech-item">
+                <span class="tech-lbl">Beta</span>
+                <span class="tech-val" id="tech-beta">--</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Order Placement Panel -->
+        <div class="terminal-trading-col">
+          <form id="order-form" class="terminal-trade-form">
+            
+            <!-- Segmented BUY / SELL Tabs -->
+            <div class="order-type-switch">
+              <button type="button" class="order-mode-btn buy active" id="order-mode-buy" data-mode="BUY">BUY</button>
+              <button type="button" class="order-mode-btn sell" id="order-mode-sell" data-mode="SELL">SELL</button>
+            </div>
+
+            <!-- Product Type: Delivery (CNC) -->
+            <div class="order-form-row">
+              <span class="order-form-label">Product Type</span>
+              <span class="info-tag tag-simulated" style="font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 4px;">Delivery (CNC)</span>
+            </div>
+
+            <!-- Order Execution Type: Market vs Limit -->
+            <div class="order-form-row">
+              <span class="order-form-label">Order Type</span>
+              <div class="radio-pill-group execution-type-pill-group">
+                <label class="radio-pill">
+                  <input type="radio" name="executionType" id="exec-type-market" value="MARKET" checked />
+                  <span>Market (Instant)</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="executionType" id="exec-type-limit" value="LIMIT" />
+                  <span>Limit (Price Trigger)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Shares Quantity with quick chips -->
+            <div class="order-input-box">
+              <div class="input-header-row">
+                <label for="order-qty" class="order-form-label">Quantity (Shares)</label>
+                <span class="available-holding-note hidden" id="holding-avail-note">Holding: <strong>0</strong> shares</span>
+              </div>
+              <div class="qty-stepper-box">
+                <button type="button" class="btn-qty-step" id="btn-qty-minus">-</button>
+                <input type="number" id="order-qty" class="modal-input text-center" min="1" max="100000" value="1" required />
+                <button type="button" class="btn-qty-step" id="btn-qty-plus">+</button>
+              </div>
+              <div class="quick-qty-chips">
+                <button type="button" class="quick-qty-btn" data-qty="10">+10</button>
+                <button type="button" class="quick-qty-btn" data-qty="25">+25</button>
+                <button type="button" class="quick-qty-btn" data-qty="50">+50</button>
+                <button type="button" class="quick-qty-btn" data-qty="100">+100</button>
+              </div>
+            </div>
+
+            <!-- Order Price Input -->
+            <div class="order-input-box" id="price-input-wrapper">
+              <div class="input-header-row">
+                <label for="order-price-val" class="order-form-label" id="order-price-label">Price (₹)</label>
+                <button type="button" class="btn-link-market-price" id="btn-reset-market-price">Reset to LTP</button>
+              </div>
+              <input type="number" step="0.05" id="order-price-val" class="modal-input" value="100.00" required />
+              <!-- Quick Limit Offset Chips -->
+              <div class="quick-limit-chips hidden" id="quick-limit-chips">
+                <button type="button" class="quick-limit-btn" data-offset="0">LTP</button>
+                <button type="button" class="quick-limit-btn" data-offset="-0.005">-0.5%</button>
+                <button type="button" class="quick-limit-btn" data-offset="-0.01">-1.0%</button>
+                <button type="button" class="quick-limit-btn" data-offset="0.005">+0.5%</button>
+                <button type="button" class="quick-limit-btn" data-offset="0.01">+1.0%</button>
+              </div>
+              <div class="limit-order-hint hidden" id="limit-order-hint">
+                <span id="limit-hint-text">💡 Triggers automatically when market matches this price.</span>
+              </div>
+            </div>
+
+            <!-- Margin & Balance Box -->
+            <div class="order-calc-card">
+              <div class="calc-row">
+                <span>Required Margin</span>
+                <strong id="modal-calc-required">₹0.00</strong>
+              </div>
+              <div class="calc-row">
+                <span>Available Virtual Balance</span>
+                <strong class="text-primary" id="modal-calc-available">₹0.00</strong>
+              </div>
+              <div class="calc-row sub hidden" id="modal-insufficient-warn" style="color: var(--market-red); font-weight: 600;">
+                ⚠️ Insufficient balance to execute this trade
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-execute-order buy" id="btn-execute-order">
+              BUY RELIANCE
+            </button>
+
+            <div class="order-security-note">
+              <span>⚡ Real-time database execution via PostgreSQL</span>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

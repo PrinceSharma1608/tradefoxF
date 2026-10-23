@@ -1,15 +1,438 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradeFox </title>
-<p>Welcome to TradeFox!
-    <br> This is just a placeholder for the main page of the TradeFox website.
-    <br> Version 1.0.0
-</p>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeFox — Paper Trading Platform</title>
+  <meta name="description" content="Trade stocks and options with zero financial risk using TradeFox paper trading platform." />
+  
+  <!-- Modern Clean Typography (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    
+  <!-- Background subtle ambient elements (clean, non-AI) -->
+  <div class="page-wrapper">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="brand-container">
+        <!-- DUMMY APP LOGO: Replace 'assets/dummy-logo.svg' with your actual logo file -->
+        <div class="logo-wrapper" title="TradeFox Dummy Logo Placeholder">
+          <img src="assets/dummy-logo.svg" alt="TradeFox Logo" id="app-logo" class="app-logo" />
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">TradeFox</span>
+          <span class="brand-badge">Paper Trading</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <a href="dashboard.html" class="theme-toggle-btn" style="text-decoration: none;" title="Open Terminal Dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>Terminal</span>
+        </a>
+
+        <!-- Theme Toggle Button (Light / Dark) -->
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle Light / Dark mode">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span class="theme-text" id="theme-status-text">Dark Mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container: Groww-inspired Calm Split Layout -->
+    <main class="main-content">
+      <div class="auth-split-layout">
+        
+        <!-- Left Showcase Side (Fintech / Paper Trading Context) -->
+        <section class="showcase-section">
+          <div class="showcase-content">
+            <div class="simulation-tag">
+              <span class="status-dot"></span>
+              <span>Live Market Simulator &bull; ₹10,00,000 Virtual Capital</span>
+            </div>
+
+            <h1 class="showcase-heading">
+              Practice trading with real market data, <span class="highlight-text">zero financial risk.</span>
+            </h1>
+
+            <p class="showcase-subtext">
+              Test your trading strategies in live Indian &amp; Global markets without risking your hard-earned money. Build discipline, track your win rate, and master your trading edge.
+            </p>
+
+            <!-- Platform Capabilities Overview (No dummy numbers) -->
+            <div class="features-overview-grid">
+              <div class="feature-box">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="feature-title">Simulated Virtual Capital</h4>
+                  <p class="feature-desc">Practice trading Indian equities with virtual balance without risking real capital.</p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="feature-title">Live Market Feeds</h4>
+                  <p class="feature-desc">Direct connectivity with exchange data and price movements for realistic execution.</p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="feature-title">Comprehensive Ledger</h4>
+                  <p class="feature-desc">Real-time order book, holding ledger, and accurate P&amp;L analytics.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Trust Badges -->
+            <div class="trust-features">
+              <div class="feature-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Zero Risk Guarantee</span>
+              </div>
+              <div class="feature-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                <span>Real-Time Market Depth</span>
+              </div>
+              <div class="feature-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Instant Execution</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Side: The Clean, Modern Auth Card -->
+        <section class="auth-section">
+          <div class="auth-card">
+            
+            <!-- Auth Header & Navigation Tabs (Groww-style Segmented Selector) -->
+            <div class="auth-card-header">
+              <div class="mobile-brand">
+                <img src="assets/dummy-logo.svg" alt="TradeFox Logo" class="mobile-logo" />
+                <span class="mobile-brand-name">TradeFox</span>
+              </div>
+
+              <div class="auth-tabs" role="tablist" aria-label="Authentication Options">
+                <button 
+                  type="button" 
+                  role="tab" 
+                  id="tab-login" 
+                  class="tab-btn active" 
+                  aria-selected="true" 
+                  aria-controls="panel-login"
+                  data-target="login">
+                  Log In
+                </button>
+                <button 
+                  type="button" 
+                  role="tab" 
+                  id="tab-signup" 
+                  class="tab-btn" 
+                  aria-selected="false" 
+                  aria-controls="panel-signup"
+                  data-target="signup">
+                  Sign Up
+                </button>
+                <div class="tab-slider" id="tab-slider"></div>
+              </div>
+            </div>
+
+            <!-- Social Quick Action (Groww style clean 1-click option) -->
+            <div class="social-login-wrapper">
+              <button type="button" class="social-btn" id="google-auth-btn">
+                <img src="assets/google-icon.svg" alt="Google" width="18" height="18" />
+                <span id="social-btn-label">Continue with Google</span>
+              </button>
+            </div>
+
+            <div class="divider">
+              <span class="divider-line"></span>
+              <span class="divider-text">or with email</span>
+              <span class="divider-line"></span>
+            </div>
+
+            <!-- Feedback Alert Banner -->
+            <div id="form-alert" class="form-alert hidden" role="alert"></div>
+
+            <!-- LOGIN PANEL -->
+            <div id="panel-login" class="auth-panel" role="tabpanel" aria-labelledby="tab-login">
+              <form id="login-form" novalidate>
+                
+                <!-- Email Field -->
+                <div class="form-group">
+                  <label for="login-email" class="form-label">Email Address</label>
+                  <div class="input-container">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                      </svg>
+                    </span>
+                    <input 
+                      type="email" 
+                      id="login-email" 
+                      name="email" 
+                      class="form-input" 
+                      placeholder="name@example.com" 
+                      autocomplete="email"
+                      required />
+                  </div>
+                  <span class="field-error" id="login-email-error"></span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                  <div class="label-row">
+                    <label for="login-password" class="form-label">Password</label>
+                    <a href="#forgot" class="forgot-link" id="forgot-password-link">Forgot password?</a>
+                  </div>
+                  <div class="input-container">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input 
+                      type="password" 
+                      id="login-password" 
+                      name="password" 
+                      class="form-input" 
+                      placeholder="Enter your password" 
+                      autocomplete="current-password"
+                      required />
+                    <button type="button" class="toggle-password" data-target="login-password" aria-label="Toggle password visibility">
+                      <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="field-error" id="login-password-error"></span>
+                </div>
+
+                <!-- Remember Me Checkbox -->
+                <div class="checkbox-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="remember-me" checked />
+                    <span class="checkbox-indicator"></span>
+                    <span class="checkbox-label">Keep me logged in on this device</span>
+                  </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="login-submit-btn">
+                  <span class="btn-text">Log In to TradeFox</span>
+                  <span class="btn-spinner hidden"></span>
+                </button>
+              </form>
+
+              <div class="card-footer-switch">
+                <span>New to TradeFox?</span>
+                <button type="button" class="switch-link" id="switch-to-signup">Open a free paper account</button>
+              </div>
+            </div>
+
+            <!-- SIGN UP PANEL -->
+            <div id="panel-signup" class="auth-panel hidden" role="tabpanel" aria-labelledby="tab-signup">
+              <form id="signup-form" novalidate>
+                
+                <!-- Name Field -->
+                <div class="form-group">
+                  <label for="signup-name" class="form-label">Full Name</label>
+                  <div class="input-container">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </span>
+                    <input 
+                      type="text" 
+                      id="signup-name" 
+                      name="name" 
+                      class="form-input" 
+                      placeholder="e.g. Rahul Sharma" 
+                      autocomplete="name"
+                      required />
+                  </div>
+                  <span class="field-error" id="signup-name-error"></span>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                  <label for="signup-email" class="form-label">Email Address</label>
+                  <div class="input-container">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                      </svg>
+                    </span>
+                    <input 
+                      type="email" 
+                      id="signup-email" 
+                      name="email" 
+                      class="form-input" 
+                      placeholder="name@example.com" 
+                      autocomplete="email"
+                      required />
+                  </div>
+                  <span class="field-error" id="signup-email-error"></span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                  <label for="signup-password" class="form-label">Password</label>
+                  <div class="input-container">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input 
+                      type="password" 
+                      id="signup-password" 
+                      name="password" 
+                      class="form-input" 
+                      placeholder="At least 8 characters" 
+                      autocomplete="new-password"
+                      required />
+                    <button type="button" class="toggle-password" data-target="signup-password" aria-label="Toggle password visibility">
+                      <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="field-error" id="signup-password-error"></span>
+
+                  <!-- Password Strength Bar & Requirement Hints -->
+                  <div class="password-meter-container" id="password-meter-wrap">
+                    <div class="password-meter-bar">
+                      <div class="meter-segment" id="meter-1"></div>
+                      <div class="meter-segment" id="meter-2"></div>
+                      <div class="meter-segment" id="meter-3"></div>
+                      <div class="meter-segment" id="meter-4"></div>
+                    </div>
+                    <div class="password-meter-label">
+                      <span id="strength-text">Password strength</span>
+                      <span class="strength-rules">Min 8 chars, 1 number</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Terms & Disclaimer -->
+                <div class="terms-disclaimer">
+                  By clicking "Create Paper Account", you agree to the 
+                  <a href="#terms">Terms of Service</a> &amp; 
+                  <a href="#privacy">Privacy Policy</a>. No real money is deposited or required.
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="signup-submit-btn">
+                  <span class="btn-text">Create Free Paper Account</span>
+                  <span class="btn-spinner hidden"></span>
+                </button>
+              </form>
+
+              <div class="card-footer-switch">
+                <span>Already have an account?</span>
+                <button type="button" class="switch-link" id="switch-to-login">Log In instead</button>
+              </div>
+            </div>
+
+            <!-- Virtual Funding Note -->
+            <div class="sim-notice">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Instant credit: ₹10,00,000 virtual balance on sign up.</span>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Bottom Mini Footer -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <p>&copy; 2026 TradeFox Inc. Simulated Paper Trading &bull; Strictly for educational and strategy testing purposes.</p>
+        <div class="footer-links">
+          <a href="#privacy">Privacy</a>
+          <a href="#terms">Terms</a>
+          <a href="#help">Help Center</a>
+          <a href="#status">Simulator Status</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
