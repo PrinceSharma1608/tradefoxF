@@ -56,12 +56,15 @@ class TradeFoxHandler(SimpleHTTPRequestHandler):
         if content_length > 0:
             body = self.rfile.read(content_length)
 
-        headers = {
-            'Content-Type': self.headers.get('Content-Type', 'application/json'),
-            'Accept': self.headers.get('Accept', 'application/json')
-        }
-        if 'Authorization' in self.headers:
-            headers['Authorization'] = self.headers['Authorization']
+        # Forward relevant headers to backend
+        headers = {}
+        for key, val in self.headers.items():
+            if key.lower() not in ('host', 'content-length', 'connection'):
+                headers[key] = val
+        if 'Content-Type' not in headers and method in ('POST', 'PUT'):
+            headers['Content-Type'] = 'application/json'
+        if 'Accept' not in headers:
+            headers['Accept'] = 'application/json'
 
         req = urllib.request.Request(target_url, data=body, headers=headers, method=method)
 

@@ -216,14 +216,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     return `₹${formatted}`;
   }
 
+  function authHeaders(extra = {}) {
+    const headers = { ...extra };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
+  }
+
+  let sessionAlertShown = false;
+  function handleUnauthorized() {
+    if (sessionAlertShown) return;
+    sessionAlertShown = true;
+    showToast('Your session has expired. Redirecting to login...', 'warning');
+    setTimeout(() => {
+      localStorage.removeItem(STORAGE_KEY_TOKEN);
+      window.location.href = 'index.html';
+    }, 1500);
+  }
+
   // Fetch real verified user details and balance from PostgreSQL
   async function fetchRealUserDetails() {
     try {
       const res = await fetch(`${API_BASE}/users/${userId}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : ''
-        }
+        headers: authHeaders({ 'Accept': 'application/json' })
       });
       if (res.ok) {
         const data = await res.json();
@@ -232,6 +248,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         liveUser.walletBalance = parseFloat(data.walletBalance) || 1000000.00;
         renderUserHeader();
         updateWalletSummaryUI();
+      } else if (res.status === 401) {
+        handleUnauthorized();
       }
     } catch (err) {
       console.warn('Could not fetch user details from /api/users:', err);
@@ -244,11 +262,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function fetchBackendHoldings() {
     try {
       const res = await fetch(`${API_BASE}/holdings?userId=${userId}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: authHeaders({ 'Accept': 'application/json' })
       });
       if (res.ok) {
         holdings = await res.json();
       } else {
+        if (res.status === 401) handleUnauthorized();
         holdings = [];
       }
     } catch (e) {
@@ -263,11 +282,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function fetchBackendOrders() {
     try {
       const res = await fetch(`${API_BASE}/orders?userId=${userId}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: authHeaders({ 'Accept': 'application/json' })
       });
       if (res.ok) {
         orders = await res.json();
       } else {
+        if (res.status === 401) handleUnauthorized();
         orders = [];
       }
     } catch (e) {
@@ -281,11 +301,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function fetchBackendWatchlist() {
     try {
       const res = await fetch(`${API_BASE}/watchlist?userId=${userId}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: authHeaders({ 'Accept': 'application/json' })
       });
       if (res.ok) {
         watchlist = await res.json();
       } else {
+        if (res.status === 401) handleUnauthorized();
         watchlist = [];
       }
     } catch (e) {
@@ -1147,7 +1168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.textContent = 'Cancelling...';
         try {
           const res = await fetch(`${API_BASE}/orders/${orderId}/cancel?userId=${userId}`, {
-            method: 'POST'
+            method: 'POST',
+            headers: authHeaders({ 'Accept': 'application/json' })
           });
           if (res.ok) {
             const data = await res.json();
@@ -1334,18 +1356,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const resolvedName = name || (benchmark ? benchmark.name : symbol);
         const res = await fetch(`${API_BASE}/watchlist`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ userId, stockSymbol: symbol, stockName: resolvedName })
         });
         if (res.ok) {
           showToast(`Added ${symbol} to your watchlist`, 'success');
+        } else if (res.status === 401) {
+          handleUnauthorized();
         }
       } else {
         const res = await fetch(`${API_BASE}/watchlist?userId=${userId}&symbol=${symbol}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: authHeaders()
         });
         if (res.ok) {
           showToast(`Removed ${symbol} from watchlist`, 'info');
+        } else if (res.status === 401) {
+          handleUnauthorized();
         }
       }
       await fetchBackendWatchlist();
@@ -2462,14 +2489,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const res = await fetch(`${API_BASE}/orders`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify(payload)
         });
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          const errMsg = errData.message || 'Order failed on backend';
+          const errMsg = errData.message || errData.error || (res.status === 401 ? 'Session expired or unauthorized' : 'Order failed on backend');
           showToast(`Order Rejected: ${errMsg}`, 'error');
+          if (res.status === 401) {
+            handleUnauthorized();
+          }
           btnExecuteOrder.disabled = false;
           updateExecuteButtonText();
           return;
