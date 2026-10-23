@@ -55,11 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const googleAuthBtn = document.getElementById('google-auth-btn');
 
   // Backend API Configuration
-  // Uses same-origin /api when accessed via web server (proxying to 8080 without CORS issues),
-  // or falls back to direct http://localhost:8080/api if opened directly as a file.
-  const API_BASE_URL = window.location.protocol.startsWith('http') 
-    ? '/api' 
-    : 'http://localhost:8080/api';
+  // 1. Check if user configured a remote cloud backend URL (e.g. for GitHub Pages deployment)
+  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url');
+  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  const API_BASE_URL = savedRemoteBackend 
+    ? savedRemoteBackend.replace(/\/+$/, '') 
+    : (isLocalHost ? '/api' : (window.location.protocol.startsWith('http') ? '/api' : 'http://localhost:8080/api'));
 
   // --------------------------------------------------------------------------
   // 2. Theme Management (Light / Dark Mode)
@@ -315,6 +317,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Parse backend error messages according to Spring Boot formats
   async function parseBackendError(response) {
+    if (response.status === 405) {
+      return '405 Method Not Allowed: GitHub Pages is a static host and cannot process database API calls. Please run TradeFox locally on http://localhost:5500 with your Spring Boot backend, or configure a public cloud backend URL in tradefox_backend_url.';
+    }
     try {
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json') || contentType.includes('application/problem+json')) {
@@ -322,6 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return json.detail || json.message || json.error || `Error ${response.status}: ${response.statusText}`;
       } else {
         const text = await response.text();
+        if (text && text.includes('<html')) {
+          return `Server returned HTTP ${response.status} (${response.statusText}). If you are on GitHub Pages, the backend server must be hosted on a cloud provider.`;
+        }
         return text || `Error ${response.status}: ${response.statusText}`;
       }
     } catch {

@@ -111,7 +111,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --------------------------------------------------------------------------
   // 3. API Helpers & Backend Handshakes
   // --------------------------------------------------------------------------
-  const API_BASE = window.location.protocol.startsWith('http') ? '/api' : 'http://localhost:8080/api';
+  const savedRemoteBackend = localStorage.getItem('tradefox_backend_url');
+  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const API_BASE = savedRemoteBackend 
+    ? savedRemoteBackend.replace(/\/+$/, '') 
+    : (isLocalHost ? '/api' : (window.location.protocol.startsWith('http') ? '/api' : 'http://localhost:8080/api'));
 
   function formatCurrency(val, includePlusSign = false) {
     const num = Number(val) || 0;
